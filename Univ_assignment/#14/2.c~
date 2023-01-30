@@ -1,0 +1,55 @@
+#include<stdio.h>
+#include<stdlib.h>
+char buf[256];
+struct node { int eki, rosen; float kyori; struct node *next; };
+
+void add_edge(struct node *adjlist[], int eki1, int eki2, int rosen, float kyori) {
+  struct node *t1, *t2;
+  t1 = (struct node*)malloc(sizeof(struct node));
+  t2 = (struct node*)malloc(sizeof(struct node));
+  // eki1 の情報を eki2 に追加
+  t1->eki = eki1; t1->rosen = rosen; t1->kyori = kyori; 
+  t1->next = adjlist[eki2];
+  adjlist[eki2] = t1;
+  // eki2 の情報を eki1 に追加
+  t2->eki = eki2; t2->rosen = rosen; t2->kyori = kyori; 
+  t2->next = adjlist[eki1];
+  adjlist[eki1] = t2;
+}
+
+float two_hop_kyori(struct node *adjlist[], int eki) {
+  int alt = 0;
+  float max1 = 0.000;
+  float max2 = 0.000;
+  struct node *p = adjlist[eki];
+
+  while(p!=NULL){
+    if(p->kyori > max1){ max1 = p->kyori;  alt = p->eki; } 
+    p = p->next;
+  }
+  p = adjlist[alt];
+  while(p!=NULL){
+    if(p->kyori > max2 && p->eki!=eki){ max2 = p->kyori; } 
+    p = p->next;
+  }
+  return max1+max2;
+}
+
+int main() {
+  int eki1, eki2, rosen, ekisu, i;
+  float kyori;
+  scanf("%d ", &ekisu);
+  struct node *adjlist[ekisu];
+  /* 隣接リスト表現を初期化。すべての頂点に対する隣接リストを空にする */
+  for(i=0;i<ekisu;++i) adjlist[i] = NULL;
+  while(fgets(buf,sizeof(buf),stdin)!=NULL) {
+    /* 隣り合う駅の情報を読取り */
+    sscanf(buf, "%d:%d:%d:%f ", &eki1, &eki2, &rosen, &kyori);
+    /* そのデータを隣接リスト表現のグラフに追加 */
+    add_edge(adjlist, eki1, eki2, rosen, kyori);
+  }
+  for(i=0;i<ekisu;++i){
+    printf("%d: %.3f\n", i, two_hop_kyori(adjlist, i));
+  }
+  return 0;
+}
