@@ -1,0 +1,11 @@
+#include <stdio.h>
+#define d 2718
+
+int main(void){
+  int i, n, fib[d] = {0, 1};               //初期値登録
+  scanf("%d", &n);
+  for(i = 2; i < d; i++){                  
+    fib[i] = (fib[i-1] + fib[i-2]) %d;   //前の2つを足してdで割ったものを配列に入れる
+  }
+  printf("%d\n", fib[n%d]);
+}
